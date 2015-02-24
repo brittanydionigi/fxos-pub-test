@@ -4,7 +4,7 @@
 ```git clone git@github.com:brittanystoroz/fxos-pub-test.git```  
 ```npm install```
 
-In index.js, replace lines 13 and 14 with [https://marketplace-dev.allizom.org/developers/api](your own consumer key & secret). Line 51 references a valid manifest.webapp ID to publish.
+In index.js, replace lines 10 and 11 with your own consumer key & secret. You can generate those here: https://marketplace-dev.allizom.org/developers/api. Line 39 passes in a valid manifest.webapp ID for publishing.
 
 ## run 
 ```node index.js```

@@ -14,8 +14,6 @@
     "url": "https://www.mozilla.org"
   },
   "dependencies": {
-    "es6-promise": "^2.0.1",
-    "oauth-1.0a": "^0.1.1",
-    "request": "^2.53.0"
+    "oauth": "^0.9.12"
   }
 }

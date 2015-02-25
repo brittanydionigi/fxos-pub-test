@@ -28,12 +28,14 @@ request.get(URLS.myAccount, null, null, function(err, data) {
 var body1 = {
   manifest: 'https://brittanystoroz.github.io/its-five-o-clock-somewhere/manifest.webapp'
 };
- 
+
 request.post(URLS.validate, null, null, body1, function(err, data1) {
-  console.log('Validated Manifest: ', JSON.parse(data1).id);
-  var body2 = { manifest: JSON.parse(data1).id };
-  request.post(URLS.create, null, null, body2, 'application/json', function(err, data2, oop) {
-    console.log(oop.req._headers)
+  var validatedManifestId = JSON.parse(data1).id;
+  var manifestQueryString = "?manifest=" + validatedManifestId;
+  console.log('Validated Manifest: ', validatedManifestId);
+
+  var body2 = { manifest: validatedManifestId };
+  request.post(URLS.create + manifestQueryString, null, null, body2, 'application/json', function(err, data2, oop) {
     console.log(data2);
   });
 });

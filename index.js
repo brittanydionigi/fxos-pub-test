@@ -14,8 +14,10 @@ var SECRET = 'bar'; // Replace with your consumer secret
 var request = new OAuth(null, null, KEY, SECRET, '1.0', null, 'HMAC-SHA1');
 
 
-// should display basic account information like display name but instead returning with
-// "Authentication credentials were not provided." because we are not authenticated for some reason
+// should display basic account information like display name/enable_recommendations. I was getting
+// "Authentication credentials were not provided." for a while but it resolved itself when I deleted
+// my keys and generated a new set. Getting display name/enable_recommendations back means we are
+// successfully authenticated here, but losing it somehow with the POST to URLS.create
 request.get(URLS.myAccount, null, null, function(err, data) {
   console.log("My Account Details: ", data);
 });

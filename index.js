@@ -1,47 +1,28 @@
 'use strict';
-
-var Promise = require('es6-promise').Promise;
-var request = require('request');
-var OAuth = require('oauth-1.0a');
-
-
-var oauth = OAuth({
-    consumer: {
-        public: 'foo', // REPLACE WITH YOUR CONSUMER KEY
-        secret: 'bar' // REPLACE WITH YOUR CONSUMER SECRET
-    },
-    signature_method: 'HMAC-SHA1'
-});
-
-function getAuthHeader(oauth) {
-  var requestData = {
-    url: 'https://marketplace-dev.allizom.org/api/v2/apps/app/',
-    method: 'POST'
-  }
-
-  var promise = new Promise(function(resolve, reject) {
-    var signedReq = oauth.authorize(requestData);
-    var authHeader = oauth.toHeader(signedReq);
-
-    console.log("Authorization Header: ", authHeader);
-
-    if (authHeader) resolve(authHeader);
-    else reject(error);
-  });
-
-  return promise;
+ 
+var OAuth = require('oauth').OAuth;
+ 
+var URLS = {
+  validate: 'https://marketplace-dev.allizom.org/api/v2/apps/validation/',
+  create: 'https://marketplace-dev.allizom.org/api/v2/apps/app/',
 };
-
-function createApplication(authHeader) {
-    request.post({ 
-      url: 'https://marketplace-dev.allizom.org/api/v2/apps/app/',
-      oauth: authHeader,
-      data: { 'manifest': '725934254a73481b94cc6535e67c2412'}
-    }, function(e, r, body) {
-      console.log("ERR: ", e);
-      console.log("R: ", r.statusCode);
-      console.log("BODY: ", body);
-    });
-}
-
-module.exports = getAuthHeader(oauth).then(createApplication);
+ 
+var KEY = 'foo'; // Replace with your consumer key
+var SECRET = 'bar'; // Replace with your consumer secret
+ 
+var request = new OAuth(null, null, KEY, SECRET, '1.0', null, 'HMAC-SHA1');
+ 
+ // using an existing manifest to validate; you will still receive a 403 error but the detail
+ // should be 'You do not own that app.' instead of 'You don't have permissions to perform that action.'
+var body1 = {
+  manifest: 'https://brittanystoroz.github.io/its-five-o-clock-somewhere/manifest.webapp'
+};
+ 
+request.post(URLS.validate, null, null, body1, function(err, data1) {
+  console.log('Validated Manifest: ', JSON.parse(data1).id);
+  var body2 = { manifest: JSON.parse(data1).id };
+  request.post(URLS.create, null, null, body2, 'application/json', function(err, data2, oop) {
+    console.log(oop.req._headers)
+    console.log(data2);
+  });
+});

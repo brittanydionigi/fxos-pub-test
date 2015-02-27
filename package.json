@@ -12,8 +12,5 @@
   "author": {
     "name": "Mozilla",
     "url": "https://www.mozilla.org"
-  },
-  "dependencies": {
-    "oauth": "^0.9.12"
   }
 }

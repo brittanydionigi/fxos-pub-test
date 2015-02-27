@@ -1,41 +1,41 @@
 'use strict';
- 
-var OAuth = require('oauth').OAuth;
+
+var request = require('request');
  
 var URLS = {
   validate: 'https://marketplace-dev.allizom.org/api/v2/apps/validation/',
-  create: 'https://marketplace-dev.allizom.org/api/v2/apps/app/',
-  myAccount: 'https://marketplace-dev.allizom.org/api/v2/account/settings/mine/'
+  create: 'https://marketplace-dev.allizom.org/api/v2/apps/app/'
 };
  
 var KEY = 'foo'; // Replace with your consumer key
 var SECRET = 'bar'; // Replace with your consumer secret
- 
-var request = new OAuth(null, null, KEY, SECRET, '1.0', null, 'HMAC-SHA1');
 
-
-// should display basic account information like display name/enable_recommendations. I was getting
-// "Authentication credentials were not provided." for a while but it resolved itself when I deleted
-// my keys and generated a new set. Getting display name/enable_recommendations back means we are
-// successfully authenticated here, but losing it somehow with the POST to URLS.create
-request.get(URLS.myAccount, null, null, function(err, data) {
-  console.log("My Account Details: ", data);
-});
-
- 
- // using an existing manifest to validate; you will still receive a 403 error but the detail
- // should be 'You do not own that app.' instead of 'You don't have permissions to perform that action.'
-var body1 = {
-  manifest: 'https://brittanystoroz.github.io/its-five-o-clock-somewhere/manifest.webapp'
+var manifestUrl = {
+  manifest: 'https://brittanystoroz.github.io/its-five-o-clock-somewhere/manifest.webapp'  // Replace with your manifest.webapp url
 };
 
-request.post(URLS.validate, null, null, body1, function(err, data1) {
-  var validatedManifestId = JSON.parse(data1).id;
-  var manifestQueryString = "?manifest=" + validatedManifestId;
+request({
+  url: URLS.validate,
+  method: 'POST',
+  body: manifestUrl,
+  json: true,
+  oauth: { "consumer_key": KEY, "consumer_secret": SECRET },
+}, function(error, response, body) {
+  var validatedManifestId = body.id;
   console.log('Validated Manifest: ', validatedManifestId);
-
-  var body2 = { manifest: validatedManifestId };
-  request.post(URLS.create + manifestQueryString, null, null, body2, 'application/json', function(err, data2, oop) {
-    console.log(data2);
-  });
+  submitApp(validatedManifestId)
 });
+
+function submitApp(manifestID) {
+    request({
+      url: URLS.create + "?manifest=" + manifestID,
+      method: 'POST',
+      body: { "manifest": manifestID },
+      json: true,
+      oauth: { "consumer_key": KEY, "consumer_secret": SECRET },
+    }, function(error, response, body) {
+      console.log("App ID: ", body.id);
+  });
+};
+
+

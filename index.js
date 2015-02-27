@@ -14,17 +14,19 @@ var manifestUrl = {
   manifest: 'https://brittanystoroz.github.io/its-five-o-clock-somewhere/manifest.webapp'  // Replace with your manifest.webapp url
 };
 
-request({
-  url: URLS.validate,
-  method: 'POST',
-  body: manifestUrl,
-  json: true,
-  oauth: { "consumer_key": KEY, "consumer_secret": SECRET },
-}, function(error, response, body) {
-  var validatedManifestId = body.id;
-  console.log('Validated Manifest: ', validatedManifestId);
-  submitApp(validatedManifestId)
-});
+function validateManifest() {
+  request({
+    url: URLS.validate,
+    method: 'POST',
+    body: manifestUrl,
+    json: true,
+    oauth: { "consumer_key": KEY, "consumer_secret": SECRET },
+  }, function(error, response, body) {
+    var validatedManifestId = body.id;
+    console.log('Validated Manifest: ', validatedManifestId);
+    submitApp(validatedManifestId)
+  });
+};
 
 function submitApp(manifestID) {
     request({
@@ -38,4 +40,5 @@ function submitApp(manifestID) {
   });
 };
 
+validateManifest();
 
